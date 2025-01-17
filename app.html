@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staking Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .calculator {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        .calculator h1 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .calculator label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .calculator input, .calculator select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .calculator button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .calculator button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>Staking Calculator</h1>
+        <label for="amount">Amount Staked (Tokens):</label>
+        <input type="number" id="amount" placeholder="Enter amount" required>
+
+        <label for="price">Price per Token ($):</label>
+        <input type="number" id="price" placeholder="Enter price per token" required>
+
+        <label for="apy">Annual Percentage Yield (APY %):</label>
+        <input type="number" id="apy" placeholder="Enter APY" required>
+
+        <label for="duration">Duration:</label>
+        <input type="number" id="duration" placeholder="Enter duration" required>
+
+        <label for="time-unit">Time Unit:</label>
+        <select id="time-unit">
+            <option value="years">Years</option>
+            <option value="months">Months</option>
+            <option value="weeks">Weeks</option>
+            <option value="days">Days</option>
+        </select>
+
+        <button onclick="calculateStaking()">Calculate</button>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function calculateStaking() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            const price = parseFloat(document.getElementById('price').value);
+            const apy = parseFloat(document.getElementById('apy').value);
+            const duration = parseFloat(document.getElementById('duration').value);
+            const timeUnit = document.getElementById('time-unit').value;
+
+            if (
+                isNaN(amount) || isNaN(price) || isNaN(apy) || isNaN(duration) ||
+                amount <= 0 || price <= 0 || apy <= 0 || duration <= 0
+            ) {
+                document.getElementById('result').innerText = 'Please enter valid positive numbers.';
+                return;
+            }
+
+            let annualFactor = 1; // Default for years
+            if (timeUnit === 'months') {
+                annualFactor = 1 / 12;
+            } else if (timeUnit === 'weeks') {
+                annualFactor = 1 / 52;
+            } else if (timeUnit === 'days') {
+                annualFactor = 1 / 365;
+            }
+
+            const effectiveDuration = duration * annualFactor;
+            const finalAmount = amount * Math.pow((1 + apy / 100), effectiveDuration);
+            const profit = finalAmount - amount;
+            const totalValue = finalAmount * price;
+            const profitValue = profit * price;
+
+            document.getElementById('result').innerText = `
+                Total: ${finalAmount.toFixed(2)} Tokens\n
+                Profit: ${profit.toFixed(2)} Tokens\n
+                Total Value: $${totalValue.toFixed(2)}\n
+                Profit Value: $${profitValue.toFixed(2)}
+            `;
+        }
+    </script>
+</body>
+</html>
